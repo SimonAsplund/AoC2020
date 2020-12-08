@@ -3,7 +3,9 @@
 # Open a file
 from pexpect import runu
 
-#5710 to low
+import copy
+
+#313 to low
 
 
 def testCommands(commands):
@@ -38,14 +40,14 @@ def testCommands(commands):
             eternaty = True
             print("acc: " , accum)
 
-        elif place >= len(commands):
+        elif place >= len(commands) - 1:
             print(" True acc: " , accum)
 
         else:
             visited.append(place)
 
     visited.append(place)
-    print("visited: " , visited)
+    #print("visited: " , visited)
 
 
 
@@ -63,16 +65,39 @@ for line in lines:
 
     commands.append(line)
 
+#testCommands(commands)
+
+nops = []
+jmps = []
 place = 0
+# find all nop and jmp
 
-accum = 0
 
-visited = []
+for line in lines:
+    if "nop" in line:
+        nops.append(place)
+    elif "jmp" in line:
+        jmps.append(place)
+    place = place + 1
 
-testCommands(commands)
+maybe = []
+for change in nops:
 
-#for "nop" in commands:
+    maybe = copy.deepcopy(commands)
 
+    print("First: ", maybe[change])
+    maybe[change] = "jmp" + maybe[change].split("nop")[1]
+    print("Then:  ", maybe[change])
+    testCommands(maybe)
+
+for change in jmps:
+
+    maybe = copy.deepcopy(commands)
+
+    #print("First: ", maybe[change])
+    maybe[change] = "nop" + maybe[change].split("jmp")[1]
+    #print("Then: ", maybe[change])
+    testCommands(maybe) 
 
 # Close opened file
 todaysInput.close()
